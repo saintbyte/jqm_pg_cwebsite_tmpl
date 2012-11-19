@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+	<title>Stalker-Gis</title>
+	<link rel="stylesheet"  href="css/jquery.mobile-1.2.0-rc.1.min.css" />
+	<link rel="stylesheet"  href="css/style.css" />
+	<script src="phonegap.js"></script>
+	<script src="js/jquery.js"></script>
+	<script src="js/jquery.mobile-1.2.0-rc.1.min.js"></script>
+	
+	<script>
+	var TOKEN;
+	function makeview()
+	{
+	  $('#content').height($(window).height()-($('#header').height() + $('#footer').height() + (parseInt($('#content').css('padding'))  * 2) + 4));
+	  $('#writenote').unbind().click(function() 
+			{
+			  $.mobile.changePage('edit.html');
+			}
+			);
+			$('#sendalert').unbind().click(function() 
+			{
+			  $.mobile.changePage('sendalert.html');
+			}
+	  );
+	}
+	$( document ).bind( "mobileinit", function() {
+            $.support.cors = true;
+	    $.mobile.allowCrossDomainPages = true;
+	    $.mobile.defaultPageTransition = 'slide';
+	});
+	$(document).ready(function(){
+			TOKEN = window.localStorage.getItem("curtoken");
+			makeview(); 
+	});
+	$(document).load(function() {
+		      makeview(); 
+	});
+	$(document).resize(function() { 
+		      makeview(); 
+	});
+	</script>
+</head>
+<body>
+<div data-role="page" data-there="a" class="mainpage">
+	<div data-role="header" id="header" data-there="a">
+		<h1 class="ui-title" role="heading" aria-level="1">Welcome</h1>
+	</div> 
+	<div data-role="content" id="content" data-there="a">
+	<a href="edit.html" data-role="button" id="writenote">Написать заметку</a>
+	<a href="sendalert.html" data-role="button" id="sendalert">Отправить всем сообщения<br /></a>
+	<br />
+	<br />
+	<a href="wiki.html" data-role="button" id="wiki">Wiki<br /></a>
+	<a href="settings.html" data-role="button" id="settings">Настройки<br /></a>
+	</div> 
+</div>
+</body>
+</html>

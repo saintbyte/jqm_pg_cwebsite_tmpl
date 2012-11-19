@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<widget xmlns="http://www.w3.org/ns/widgets" xmlns:gap="http://phonegap.com/ns/1.0"  id="ru.sbm.test1" versionCode="10" version="1.0.0">
+<preference name="phonegap-version" value="2.0.0" />
+<preference name="orientation" value="portrait" />
+<preference name="fullscreen" value="true" />
+<preference name="target-device" value="tablet" />
+<preference name="webviewbounce" value="false" />
+<preference name="stay-in-webview" value="false" />
+<preference name="prerendered-icon" value="false" />
+<icon src="icons/android32х32.png" default="true"  />
+<icon src="icons/android16х16.png" width="16" height="16" />
+<icon src="icons/android72х72.png" width="72" height="72" />
+<gap:splash src="splashes/splash.png" />
+<name>StalkerGIS</name>
+<description>Cуровая сталкеровская геоинформационная система, клиент к БД</description>
+<author href="https://build.phonegap.com" email="yk@mail.ru">YK</author>
+</widget>

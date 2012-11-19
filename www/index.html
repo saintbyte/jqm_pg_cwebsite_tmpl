@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+	<title>Stalker-Gis</title>
+	<link rel="stylesheet"  href="css/jquery.mobile-1.2.0-rc.1.min.css" />
+	<link rel="stylesheet"  href="css/style.css" />
+	<script src="phonegap.js"></script>
+	<script src="js/jquery.js"></script>
+	<script src="js/jquery.mobile-1.2.0-rc.1.min.js"></script>
+	
+	<script>
+	var HOST = 'http://stalker-gis.ru';
+	var CURURL = '';
+	var CURWIKIURL  = '';
+	var TOKEN;
+	function makeviewindex()
+	{
+	  $('#content').height($(window).height()-($('#header').height() + $('#footer').height() + (parseInt($('#content').css('padding'))  * 2) + 4));
+	}
+	
+	$( document ).bind( "pageload", function() {
+	  $.support.cors = true;
+	  $.mobile.allowCrossDomainPages = true;
+	  $.mobile.defaultPageTransition = 'slide';
+	  var data_absUrl = window.location.href;
+	  if (data_absUrl.lastIndexOf('/') > -1) {
+	    CURURL = data_absUrl.substr(data_absUrl.lastIndexOf('/')+1);
+	  } else {
+	    CURURL = data_absUrl;
+	  }
+	  if (CURURL == 'wiki.html')
+	  {
+	    $.mobile.showPageLoadingMsg();
+	    CURWIKIURL = '';
+	    loadwiki('');
+	    $('#wikiroot').unbind().click(function() { loadwiki(''); });
+	  }
+	  if (CURURL == 'edit.html')
+	  {
+	    TEXT = window.localStorage.getItem("drafttext");
+	    if (TEXT) {
+	      $('#textarea').val(TEXT);
+	      $('#textarea').textarea('refresh');
+	    }
+	    $('#textarea').unbind().change(function() {
+		window.localStorage.setItem("drafttext",$('#textarea').val());
+	    });	
+	  }
+	  if (CURURL == 'settings.html')
+	  {
+	    $('#clear_all_settings').unbind().click(function() {
+	      window.localStorage.clear();
+	      alert('Всен настройки сброшены');
+	    });
+	    var networkState = navigator.connection.type;
+	    var states = {};
+	    states[Connection.UNKNOWN]  = 'Unknown connection';
+	    states[Connection.ETHERNET] = 'Ethernet connection';
+	    states[Connection.WIFI]     = 'WiFi connection';
+	    states[Connection.CELL_2G]  = 'Cell 2G connection';
+	    states[Connection.CELL_3G]  = 'Cell 3G connection';
+	    states[Connection.CELL_4G]  = 'Cell 4G connection';
+	    states[Connection.NONE]     = 'No network connection';
+	    alert('Connection type: ' + states[networkState]);
+	  }
+	});
+	function loadwiki(url)
+	{
+	//http://stalker-gis.ru/wikijson/?token=1_89655ac017fdd50065f2141c855bafba&urlToParse=
+		if (url.substr(url.length-1) == '/') {
+		  url = url.substr(0,url.length-1);
+		}
+		if (CURWIKIURL != '') 
+		{
+		  url = CURWIKIURL+'/'+url;
+		}
+		$.mobile.showPageLoadingMsg();
+		var ajaxurl = HOST+'/wikijson/?token='+TOKEN+'&urlToParse='+url+'&callback=?';
+		$.ajax(
+		    { url: ajaxurl,
+		     dataType: "jsonp",
+		     success: function(data, textStatus, jqXHR) {
+			    $.mobile.hidePageLoadingMsg(); 
+			    if (data.wiki) {
+			      $('#heading').html(data.wiki.title);
+			      $('#wiki').html('<h1>'+data.wiki.title+'</h1>'+data.wiki.text);
+			      CURWIKIURL = url;
+			      $('#wiki a').unbind().click(function(event) {
+			       var url = $(this).attr('href');
+			       loadwiki(url);
+			       event.preventDefault();
+			       event.stopPropagation();
+			      });
+		            } else {
+				alert('Error:'+data.result);					
+			    }
+			  }
+                });
+	}
+	
+	function login()
+	{
+			  str = $(window).height();
+			  header_height = $('#header').height();
+			  footer_height = $('#footer').height();
+			  str += ' '+header_height +' '+footer_height;
+			  $('#content').height($(window).height()-($('#header').height() + $('#footer').height() + (parseInt($('#content').css('padding'))  * 2) + 4));
+			  //alert(str)
+			  $.mobile.showPageLoadingMsg();
+			  $.ajax(
+			  { url: HOST+'/auth/jsonlogin?login='+$('#login').val()+'&password='+$('#password').val()+'&callback=?',
+			  dataType: "jsonp",
+			  success: function(data, textStatus, jqXHR) {
+			    $.mobile.hidePageLoadingMsg(); 
+			    if (data.result == 'OK') {
+				if ($('#save').val() == 'on') {
+					window.localStorage.setItem("autologin", "1");
+					window.localStorage.setItem("login",    $('#login').val());
+					window.localStorage.setItem("password", $('#password').val());
+				} else {
+					window.localStorage.setItem("autologin", "0");
+				}
+				TOKEN = data.token;
+				window.localStorage.setItem("curtoken", data.token);
+				$.mobile.changePage('first.html');	
+		            } else {
+				alert('Error:'+data.result);					
+			    }
+			  }
+			  });
+	}
+	
+	$(document).ready(function(){
+			if (true) {
+			  $('#online').show();
+			  $('#offline').hide();
+			  makeviewindex(); 
+			  var autologin = window.localStorage.getItem("autologin");
+			  if (autologin == '1')
+			  {
+				$('#save').attr("checked",true).checkboxradio("refresh");
+				$('#login').val(window.localStorage.getItem("login"));
+				$('#password').val(window.localStorage.getItem("password"));
+				login();
+			  }	
+			  $('#login_butt').click(function() {
+				  login();
+			  });
+			} else {
+			  $('#offline').show();
+			  $('#online').hide();
+			  
+			}
+			//http://stalker-gis.ru/auth/jsonlogin?login=123123&password=123123
+	});
+	</script>
+</head>
+<body>
+<div data-role="page" data-there="a" class="mainpage">
+	<div data-role="header" id="header" data-there="a">
+		<h1 class="ui-title" role="heading" aria-level="1">Welcome</h1>
+	</div> 
+	<div data-role="content" id="content" data-there="a">
+	<div id="online">
+	<input type="text" id="login" placeholder="Login">
+	<input type="password" id="password" placeholder="Password">
+	<input type="checkbox" name="save" id="save" class="custom" />
+	<label for="save">Запомнить</label>
+	<button data-role="button" data-inline="true" data-theme="b" id="login_butt">Войти</button>
+	<br /><br />
+	<!-- button data-role="button" data-inline="true" data-theme="b" id="test_butt">Test</button -->
+	<br /><br />
+	</div>
+	<div id="offline" style="display: none;">
+	  Сеть недоступна, работайте в offline
+	  <a href="offline.html" data-role="button" data-inline="true" data-theme="b">Работать в offline</a>
+	</div>
+	</div> 
+	<!-- div data-role="footer" id="footer" data-theme="a">
+			<p>&copy; 2012 Stalker-Gis</p>
+	</div -->
+</div>
+</body>
+</html>

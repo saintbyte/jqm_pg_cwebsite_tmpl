@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+	<title>Stalker-Gis</title>
+	<link rel="stylesheet"  href="css/jquery.mobile-1.2.0-rc.1.min.css" />
+	<link rel="stylesheet"  href="css/style.css" />
+	<script src="phonegap.js"></script>
+	<script src="js/jquery.js"></script>
+	<script src="js/jquery.mobile-1.2.0-rc.1.min.js"></script>
+</head>
+<body>
+<div data-role="page" data-there="a" class="mainpage">
+	<div data-role="header" id="header" data-there="a">
+		<a href="first.html" data-icon="home" data-iconpos="notext" data-direction="reverse">Home</a>
+		<a href="wiki.html"  data-icon="back" data-iconpos="notext" data-direction="reverse">Wiki</a>
+		<h1 class="ui-title" id="heading" role="heading" aria-level="1">Wiki</h1>
+	</div> 
+	<div data-role="content" id="wiki" data-there="a">
+	
+	</div> 
+</div>
+</body>
+</html>

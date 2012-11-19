@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+	<title>Stalker-Gis</title>
+	<link rel="stylesheet"  href="css/jquery.mobile-1.2.0-rc.1.min.css" />
+	<link rel="stylesheet"  href="css/style.css" />
+	<script src="phonegap.js"></script>
+	<script src="js/jquery.js"></script>
+	<script src="js/jquery.mobile-1.2.0-rc.1.min.js"></script>
+	
+	<script>
+	var TOKEN;
+	function makeview()
+	{
+	  $('#content').height($(window).height()-($('#header').height() + $('#footer').height() + (parseInt($('#content').css('padding'))  * 2) + 4));
+	  TOKEN = window.localStorage.getItem("curtoken");
+	  TEXT = window.localStorage.getItem("drafttext");
+	  if (TEXT) {
+	    $('#textarea').val(TEXT);
+	  }
+	  $('#textarea').change(function() {
+	    window.localStorage.setItem("drafttext",$('#textarea').val());
+	  });
+	}
+	
+	$( document ).bind( "mobileinit", function() {
+            $.support.cors = true;
+	    $.mobile.allowCrossDomainPages = true;
+	});
+	$(document).ready(function(){
+			makeview(); 	
+	});
+	$(document).load(function() {
+		      makeview(); 
+	});
+	$(document).resize(function() { 
+		      makeview(); 
+	});
+	</script>
+</head>
+<body>
+<div data-role="page" data-there="a" class="mainpage">
+	<div data-role="header" id="header" data-there="a">
+		Offline</h1>
+	</div> 
+	<div data-role="content" id="content" data-there="a">
+	<textarea style="width:100%" id="textarea"></textarea>
+	</div> 
+</div>
+</body>
+</html>

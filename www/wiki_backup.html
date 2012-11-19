@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+	<title>Stalker-Gis</title>
+	<link rel="stylesheet"  href="css/jquery.mobile-1.2.0-rc.1.min.css" />
+	<link rel="stylesheet"  href="css/style.css" />
+	<script src="phonegap.js"></script>
+	<script src="js/jquery.js"></script>
+	<script src="js/jquery.mobile-1.2.0-rc.1.min.js"></script>
+	
+	<script>
+	var TOKEN;
+	var HOST = 'http://stalker-gis.ru';
+	var CURURL  = '';
+	function makeview()
+	{
+	  TOKEN = window.localStorage.getItem("curtoken");
+	  $('#content').height($(window).height()-($('#header').height() + $('#footer').height() + (parseInt($('#content').css('padding'))  * 2) + 4));
+	  loadwiki('');
+	}
+
+	function loadwiki(url)
+	{
+	//http://stalker-gis.ru/wikijson/?token=1_89655ac017fdd50065f2141c855bafba&urlToParse=
+		if (url.substr(url.length-1) == '/') {
+		 url = url.substr(0,url.length-1);
+		}
+		if (CURURL != '') 
+		{
+		  url = CURURL+'/'+url;
+		}
+		$.mobile.showPageLoadingMsg();
+		var ajaxurl = HOST+'/wikijson/?token='+TOKEN+'&urlToParse='+url+'&callback=?';
+		alert(ajaxurl);
+		$.ajax(
+		    { url: ajaxurl,
+		     dataType: "jsonp",
+		     success: function(data, textStatus, jqXHR) {
+			    console.log(data);
+			    $.mobile.hidePageLoadingMsg(); 
+			    if (data.wiki) {
+			      $('#heading').html(data.wiki.title);
+			      $('#content').html('<h1>'+data.wiki.title+'</h1>'+data.wiki.text);
+			      CURURL = url;
+			      $('#content a').unbind().click(function(event) {
+			       var url = $(this).attr('href');
+			       loadwiki(url);
+			       event.preventDefault();
+			       event.stopPropagation();
+			      });
+		            } else {
+				alert('Error:'+data.result);					
+			    }
+			  }
+                });
+	}
+	$( document ).bind( "mobileinit", function() {
+            $.support.cors = true;
+	    $.mobile.allowCrossDomainPages = true;
+	    $.mobile.defaultPageTransition = 'slide';
+	});
+	$(document).ready(function(){
+			TOKEN = window.localStorage.getItem("curtoken");
+			makeview();
+	});
+	$(document).load(function() {
+		      makeview(); 
+	});
+	$(document).resize(function() { 
+		      makeview(); 
+	});
+	</script>
+</head>
+<body>
+<div data-role="page" data-there="a" class="mainpage">
+	<div data-role="header" id="header" data-there="a">
+		<a href="first.html" data-icon="home" data-iconpos="notext" data-direction="reverse">Home</a>
+		<a href="wiki.html" data-icon="back" data-iconpos="notext" data-direction="reverse">Wiki</a>
+		<h1 class="ui-title" id="heading" role="heading" aria-level="1">Wiki</h1>
+	</div> 
+	<div data-role="content" id="content" data-there="a">
+	
+	</div> 
+</div>
+</body>
+</html>
